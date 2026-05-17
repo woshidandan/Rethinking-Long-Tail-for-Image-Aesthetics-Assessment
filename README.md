@@ -1,3 +1,23 @@
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Framework](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?&logo=PyTorch&logoColor=white)](https://pytorch.org/)
+
+<div align="center">
+<h1>
+<b>
+Rethinking-Long-Tail-for-Image-Aesthetics-Assessment
+</b>
+</h1>
+<h4>
+<b>
+Shuai He, Yuxin Chen, Limin Liu, Anlong Ming, Huadong Ma
+      
+Beijing University of Posts and Telecommunications
+</b>
+</h4>
+</div>
+
+[[国内的小伙伴请看更详细的中文说明]](https://github.com/woshidandan/Rethinking-Long-Tail-for-Image-Aesthetics-Assessment/blob/main/ELTA2_AVA_TRAINING_AND_EVALUATION_ZH.md)
+
 # Rethinking-Long-Tail-for-Image-Aesthetics-Assessment
 ELTA 2.0 employs an aesthetics-guided Text-to-Image model to generate new data to solve long-tail issue. 利用文生图模型解决IAA中的长尾问题。
 
