@@ -18,6 +18,9 @@ Beijing University of Posts and Telecommunications
 
 [[国内的小伙伴请看更详细的中文说明]](https://github.com/woshidandan/Rethinking-Long-Tail-for-Image-Aesthetics-Assessment/blob/main/ELTA2_AVA_TRAINING_AND_EVALUATION_ZH.md)
 
+<img width="3935" height="1874" alt="Overall structure_01" src="https://github.com/user-attachments/assets/5c2d31f4-769d-482c-995a-4ffe0b93271a" />
+
+
 # Rethinking-Long-Tail-for-Image-Aesthetics-Assessment
 ELTA 2.0 employs an aesthetics-guided Text-to-Image model to generate new data to solve long-tail issue. 利用文生图模型解决IAA中的长尾问题。
 
