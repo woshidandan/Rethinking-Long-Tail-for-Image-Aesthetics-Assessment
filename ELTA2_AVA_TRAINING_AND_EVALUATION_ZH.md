@@ -1,52 +1,49 @@
-# Rethinking-Long-Tail-for-Image-Aesthetics-Assessment
-ELTA 2.0 employs an aesthetics-guided Text-to-Image model to generate new data to solve long-tail issue. 利用文生图模型解决IAA中的长尾问题。
+# ELTA 2.0 AVA 训练、推理与指标教程
 
-# ELTA 2.0 AVA Training, Inference, and Metrics Guide
+本文档整合了 ELTA 2.0 AVA 包中的训练流程、`val+test` 合并集推理流程，以及论文常用指标和 scene 细分评估方法。推荐按以下顺序使用：
 
-This document combines the ELTA 2.0 AVA training workflow, `val+test` inference workflow, paper-style metrics, and scene-level evaluation steps. A typical workflow is:
+1. 配置环境与数据路径。
+2. 使用 AVA 训练集训练或继续训练模型。
+3. 在 AVA `val+test` 合并集上推理。
+4. 查看整体指标、label 分段指标和 scene 分段指标。
+5. 如有需要，使用 scene 校准流程进一步评估。
 
-1. Prepare the environment and data paths.
-2. Train or continue training on the AVA training split.
-3. Run inference on the AVA `val+test` split.
-4. Inspect overall metrics, label-bucket metrics, and scene-bucket metrics.
-5. Optionally apply scene calibration and evaluate the calibrated predictions.
+## 1. 环境准备
 
-## 1. Environment Setup
-
-Use the preconfigured Conda environment:
+推荐使用已经配置好的 Conda 环境：
 
 ```bash
 source /root/miniconda3/etc/profile.d/conda.sh
 conda activate /root/autodl-tmp/conda_env/elta10
 ```
 
-Alternatively, point directly to the Python executable in that environment:
+也可以直接指定环境中的 Python：
 
 ```bash
 export PYTHON_BIN=/root/autodl-tmp/conda_env/elta10/bin/python
 ```
 
-Enter the ELTA 2.0 AVA package directory:
+进入 ELTA 2.0 AVA 包目录：
 
 ```bash
 cd /root/autodl-tmp/ELTA/ELTA2_AVA_PACKAGE
 ```
 
-## 2. Data and Metadata Paths
+## 2. 数据与元数据路径
 
-Default AVA data path:
+默认 AVA 数据路径：
 
 ```bash
 export DATA_ROOT=/root/autodl-tmp/ELTA/AVA
 ```
 
-The package already includes the metadata required for training and evaluation:
+包内已经包含训练和评估需要的标签元数据：
 
 ```bash
 export META_ROOT=/root/autodl-tmp/ELTA/ELTA2_AVA_PACKAGE/labels
 ```
 
-Main metadata files:
+主要元数据文件包括：
 
 ```text
 labels/ava_train_meta.csv
@@ -55,16 +52,16 @@ labels/tail_config.json
 labels/ava_scene_stats.csv
 ```
 
-These files are used as follows:
+其中：
 
-- `ava_train_meta.csv` is used for training.
-- `ava_valtest_meta.csv` is used for inference and evaluation on the merged `val+test` split.
-- `tail_config.json` is used for label-tail buckets and scene evaluation.
-- `ava_scene_stats.csv` is used for scene statistics and scene-tail grouping.
+- `ava_train_meta.csv` 用于训练。
+- `ava_valtest_meta.csv` 用于 `val+test` 合并集推理和评估。
+- `tail_config.json` 用于 label 长尾分段和 scene 评估。
+- `ava_scene_stats.csv` 用于 scene 统计和 scene 长尾划分。
 
-## 3. Continue Training from the Packaged Checkpoint
+## 3. 从已有权重继续训练
 
-To continue training from the default packaged checkpoint, run:
+如需基于包内默认权重继续训练，运行：
 
 ```bash
 DATA_ROOT=/root/autodl-tmp/ELTA/AVA \
@@ -74,13 +71,13 @@ RESUME_CKPT=/root/autodl-tmp/ELTA/ELTA2_AVA_PACKAGE/weights/elta2_ava_target_ada
 bash scripts/train_ava.sh
 ```
 
-Training output directory:
+训练输出目录：
 
 ```text
 /root/autodl-tmp/ELTA/elta2_train_runs/train_from_package
 ```
 
-Main output files:
+主要输出文件：
 
 ```text
 checkpoint/ckpt.pth
@@ -88,9 +85,9 @@ history.jsonl
 val_epoch*.csv
 ```
 
-## 4. Train from Scratch or Another Checkpoint
+## 4. 从头训练或从其他 checkpoint 训练
 
-To train from scratch, or to train from another checkpoint, call the core training script directly:
+如果需要从头训练，或从其他 checkpoint 开始训练，可以直接调用核心训练脚本：
 
 ```bash
 /root/autodl-tmp/conda_env/elta10/bin/python code/elta2_ava.py train \
@@ -114,32 +111,32 @@ To train from scratch, or to train from another checkpoint, call the core traini
   --rank_loss_weight 0.05
 ```
 
-To resume from a specific checkpoint, add:
+如果要从某个 checkpoint 继续训练，增加以下参数：
 
 ```bash
 --resume /path/to/ckpt.pth --reset_epoch
 ```
 
-## 5. Training Logs and Metrics
+## 5. 训练日志与指标
 
-Each epoch writes the following metrics to `history.jsonl`:
+每个 epoch 会在 `history.jsonl` 中记录：
 
 ```text
 plcc, srcc, mae, mse, LL_mae, LM_mae, LH_mae, SN_mae, SJ_mae
 ```
 
-Metric definitions:
+指标含义：
 
-- `plcc`: Pearson Linear Correlation Coefficient.
-- `srcc`: Spearman Rank Correlation Coefficient.
-- `mae`: Mean Absolute Error.
-- `mse`: Mean Squared Error.
-- `LL_mae/LM_mae/LH_mae`: MAE for low-score, mid-score, and high-score aesthetic label buckets.
-- `SN_mae/SJ_mae`: MAE for scene-tail and scene-head buckets.
+- `plcc`：Pearson Linear Correlation Coefficient。
+- `srcc`：Spearman Rank Correlation Coefficient。
+- `mae`：Mean Absolute Error。
+- `mse`：Mean Squared Error。
+- `LL_mae/LM_mae/LH_mae`：按美学分数区间划分的低分段、中分段、高分段 MAE。
+- `SN_mae/SJ_mae`：按 scene 长尾和非长尾划分的 MAE。
 
-## 6. Inference on the val+test Split
+## 6. 在 val+test 合并集上推理
 
-Run inference with the packaged default checkpoint:
+使用包内默认权重推理：
 
 ```bash
 DATA_ROOT=/root/autodl-tmp/ELTA/AVA \
@@ -149,28 +146,28 @@ OUT_CSV=/root/autodl-tmp/ELTA/elta2_eval_runs/valtest_predictions.csv \
 bash scripts/infer_ava.sh
 ```
 
-To evaluate your own trained model, replace `CKPT` with the corresponding checkpoint path, for example:
+如果要评估自己训练得到的模型，请将 `CKPT` 替换为对应 checkpoint，例如：
 
 ```bash
 CKPT=/root/autodl-tmp/ELTA/elta2_train_runs/train_from_package/checkpoint/ckpt.pth
 ```
 
-Inference outputs:
+推理输出：
 
 ```text
 /root/autodl-tmp/ELTA/elta2_eval_runs/valtest_predictions.csv
 /root/autodl-tmp/ELTA/elta2_eval_runs/valtest_predictions.metrics.json
 ```
 
-The `*.metrics.json` file contains:
+`*.metrics.json` 中包含：
 
 ```text
 plcc, srcc, mae, mse, LL_mae, LM_mae, LH_mae, SN_mae, SJ_mae
 ```
 
-## 7. Generate the Scene-Level Report
+## 7. 生成 scene 细分报告
 
-To further summarize results by scene, scene-tail, and scene-head buckets, run:
+如果需要按 scene、长尾 scene 和非长尾 scene 进一步统计，运行：
 
 ```bash
 /root/autodl-tmp/conda_env/elta10/bin/python code/elta2_scene_eval.py \
@@ -181,7 +178,7 @@ To further summarize results by scene, scene-tail, and scene-head buckets, run:
   --output_dir /root/autodl-tmp/ELTA/elta2_eval_runs/scene_eval
 ```
 
-Output files:
+输出文件：
 
 ```text
 scene_eval/scene_summary.json
@@ -189,7 +186,7 @@ scene_eval/per_scene_metrics.csv
 scene_eval/predictions_with_scene_buckets.csv
 ```
 
-Key fields in `scene_summary.json`:
+`scene_summary.json` 中的关键字段：
 
 ```text
 overall.plcc
@@ -202,7 +199,7 @@ scene.scene_tail.mae
 scene.scene_head.mae
 ```
 
-For paper tables, these fields can be read as:
+对应论文表格可读为：
 
 ```text
 P  = overall.plcc
@@ -214,15 +211,15 @@ SN = scene.scene_tail.mae
 SJ = scene.scene_head.mae
 ```
 
-## 8. Use the Scene Calibration File
+## 8. 使用 scene 校准文件
 
-The package includes an optional scene bias table:
+包内包含可选的 scene bias 表：
 
 ```text
 weights/scene_bias.csv
 ```
 
-To reuse the scene calibration workflow, first fit calibration on training predictions, then apply it to the `val+test` predictions:
+如果需要复用 scene 校准流程，应先在训练集预测上拟合校准，再对 `val+test` 预测应用：
 
 ```bash
 /root/autodl-tmp/conda_env/elta10/bin/python code/elta2_scene_calibrate.py \
@@ -232,7 +229,7 @@ To reuse the scene calibration workflow, first fit calibration on training predi
   --shrink_k 80
 ```
 
-Then run scene evaluation again on the calibrated predictions:
+然后对校准后的预测再运行 scene 评估：
 
 ```bash
 /root/autodl-tmp/conda_env/elta10/bin/python code/elta2_scene_eval.py \
@@ -243,9 +240,9 @@ Then run scene evaluation again on the calibrated predictions:
   --output_dir /root/autodl-tmp/ELTA/elta2_eval_runs/calibrated_scene_eval
 ```
 
-## 9. Recommended Workflows
+## 9. 推荐工作流
 
-To reproduce evaluation metrics only, run:
+如果只是复现实验指标，可以直接执行：
 
 ```bash
 cd /root/autodl-tmp/ELTA/ELTA2_AVA_PACKAGE
@@ -264,7 +261,7 @@ bash scripts/infer_ava.sh
   --output_dir /root/autodl-tmp/ELTA/elta2_eval_runs/scene_eval
 ```
 
-To retrain first and then evaluate the trained checkpoint, run:
+如果需要重新训练后再评估，可以执行：
 
 ```bash
 cd /root/autodl-tmp/ELTA/ELTA2_AVA_PACKAGE
@@ -281,5 +278,4 @@ CKPT=/root/autodl-tmp/ELTA/elta2_train_runs/train_from_package/checkpoint/ckpt.p
 OUT_CSV=/root/autodl-tmp/ELTA/elta2_eval_runs/valtest_predictions.csv \
 bash scripts/infer_ava.sh
 ```
-
 
