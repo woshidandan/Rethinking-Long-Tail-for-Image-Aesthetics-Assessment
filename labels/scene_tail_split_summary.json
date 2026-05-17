@@ -1,0 +1,23 @@
+{
+  "scene_split_rule": "long_tail_scene if category is in tail_config.minority_scenes; otherwise non_long_tail_scene",
+  "scene_ratio_cut": 0.2,
+  "minority_scene_count": 317,
+  "files": {
+    "scene_long_tail_train.csv": {
+      "rows": 92084,
+      "unique_scenes": 317
+    },
+    "scene_non_long_tail_train.csv": {
+      "rows": 137867,
+      "unique_scenes": 80
+    },
+    "scene_long_tail_valtest.csv": {
+      "rows": 10156,
+      "unique_scenes": 314
+    },
+    "scene_non_long_tail_valtest.csv": {
+      "rows": 15395,
+      "unique_scenes": 80
+    }
+  }
+}

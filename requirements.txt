@@ -1,0 +1,12 @@
+torch
+torchvision
+timm
+numpy
+pandas
+scipy
+scikit-learn
+pillow
+tqdm
+diffusers
+accelerate
+
