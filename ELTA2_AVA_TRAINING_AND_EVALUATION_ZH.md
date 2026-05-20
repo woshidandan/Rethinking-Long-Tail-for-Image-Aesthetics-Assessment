@@ -136,7 +136,7 @@ plcc, srcc, mae, mse, LL_mae, LM_mae, LH_mae, SN_mae, SJ_mae
 
 ## 6. 在 val+test 合并集上推理
 
-使用包内默认权重推理：
+使用包内默认权重推理[从这里下载](https://drive.google.com/drive/folders/1FVZBY6rym90FIOyO691cPlHQi9QwtH8w?usp=sharing)：
 
 ```bash
 DATA_ROOT=/root/autodl-tmp/ELTA/AVA \
