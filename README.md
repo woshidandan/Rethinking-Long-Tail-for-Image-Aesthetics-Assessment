@@ -162,7 +162,7 @@ Metric definitions:
 
 ## 6. Inference on the val+test Split
 
-Run inference with the packaged default checkpoint:
+Run inference with the packaged default checkpoint [download from this link](https://drive.google.com/drive/folders/1FVZBY6rym90FIOyO691cPlHQi9QwtH8w?usp=sharing):
 
 ```bash
 DATA_ROOT=/root/autodl-tmp/ELTA/AVA \
