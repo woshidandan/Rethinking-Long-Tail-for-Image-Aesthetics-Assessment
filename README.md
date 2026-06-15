@@ -10,6 +10,7 @@ Rethinking-Long-Tail-for-Image-Aesthetics-Assessment
 <h4>
 <b>
 Shuai He, Yuxin Chen, Limin Liu, Anlong Ming, Huadong Ma
+
       
 Beijing University of Posts and Telecommunications
 </b>
